@@ -17,14 +17,31 @@ void VoronoiDiagram::printEndpoint(Halfedge_handle halfEdge, bool isSourceVertex
 
 void VoronoiDiagram::loadPointsFromFile(char* fileName)
 {
+  std::chrono::time_point<std::chrono::system_clock> timeStamp0, timeStamp1;
   std::ifstream input(fileName);
   assert( input );
   site2D site;
 
-  while ( input >> site ) this->voronoiDiagram->insert(site);
-  input.close();
+  long pointsCount = 0;
+  timeStamp0 = std::chrono::high_resolution_clock::now();
+  while ( input >> site )
+  {
+      this->voronoiDiagram->insert(site);
+      pointsCount++;
+      if(pointsCount%10000 == 0)
+      { 
+          std::chrono::duration<double, std::milli> stepDuration = std::chrono::high_resolution_clock::now() - timeStamp0;
+          std::cout << pointsCount << " pontos inseridos. Tempo de execução total: " << stepDuration.count() << " milissegundos"<< std::endl;
+      }
+  }
+  timeStamp1 = std::chrono::high_resolution_clock::now();
+  input.close();  
 
   assert( this->voronoiDiagram->is_valid() );
+
+  std::chrono::duration<double, std::milli> duration = timeStamp1 - timeStamp0;
+
+  std::cout << pointsCount << " pontos inseridos no diagrama em " << duration.count() << " milissegundos\n";
 }
 
 void VoronoiDiagram::queryPoint(point2D point)
@@ -65,6 +82,7 @@ void VoronoiDiagram::queryPoint(point2D point)
 
 void VoronoiDiagram::queryPointsFromFile(char* fileName)
 {
+  std::chrono::time_point<std::chrono::system_clock> timeStamp0, timeStamp1;
   std::vector<point2D> queryPoints;
   std::ifstream input("data/queries1.dt.cin");
   assert( input );
@@ -72,5 +90,17 @@ void VoronoiDiagram::queryPointsFromFile(char* fileName)
   while ( input >> p ) queryPoints.emplace_back(p);
   input.close();
 
-  for(point2D point : queryPoints) this->queryPoint(point);
+  long pointsCount = 0;
+  timeStamp0 = std::chrono::high_resolution_clock::now();
+  for(point2D point : queryPoints) 
+  {
+      this->queryPoint(point);
+      pointsCount++;
+      if(pointsCount%10000 == 0) std::cout << pointsCount << " pontos buscados" << std::endl;
+  }
+
+  timeStamp1 = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double, std::milli> duration = timeStamp1 - timeStamp0;
+
+  std::cout << pointsCount << " pontos buscados no diagrama em " << duration.count() << " milissegundos\n";
 }
