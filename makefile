@@ -4,7 +4,7 @@ COMPILER = g++ --std=c++17
 MODULES = VoronoiDiagram.o
 
 main: VoronoiDiagram
-	$(COMPILER) main.cpp -o main $(MODULES) $(LINK) $(INCLUDE)
+	$(COMPILER) main.cpp -O3 -o main $(MODULES) $(LINK) $(INCLUDE)
 
 VoronoiDiagram: 
-	$(COMPILER) -c VoronoiDiagram.cpp
+	$(COMPILER) -O3 -c VoronoiDiagram.cpp
