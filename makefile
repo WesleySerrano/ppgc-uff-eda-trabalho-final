@@ -1,10 +1,10 @@
-INCLUDE = -I /usr/local/include
-LINK = -lgmp -lmpfr
+#INCLUDE = -I /usr/local/include
+LINK = -lm
 COMPILER = g++ --std=c++17
-MODULES = VoronoiDiagram.o
+MODULES = Voronoi.o
 
-main: VoronoiDiagram
-	$(COMPILER) main.cpp -O3 -o main $(MODULES) $(LINK) $(INCLUDE)
+main: Voronoi
+	$(COMPILER) main.cpp -O3 -o main $(MODULES) $(LINK) 
 
-VoronoiDiagram: 
-	$(COMPILER) -O3 -c VoronoiDiagram.cpp
+Voronoi: 
+	$(COMPILER) -O3 -c Voronoi.cpp

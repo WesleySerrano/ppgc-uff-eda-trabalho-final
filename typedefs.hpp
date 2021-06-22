@@ -1,15 +1,88 @@
-// typedefs for defining the adaptor
-typedef CGAL::Exact_predicates_inexact_constructions_kernel                  K;
-typedef CGAL::Delaunay_triangulation_2<K>                                    DelaunayTriangulation;
-typedef CGAL::Delaunay_triangulation_adaptation_traits_2<DelaunayTriangulation>                 AdaptationTraits;
-typedef CGAL::Delaunay_triangulation_caching_degeneracy_removal_policy_2<DelaunayTriangulation> AP;
-typedef CGAL::Voronoi_diagram_2<DelaunayTriangulation,AdaptationTraits,AP>                      CGAL_VoronoiDiagram;
+class Arc;
+class Event;
+class Segment;
 
-// typedef for the result type of the point location
-typedef AdaptationTraits::Site_2                    site2D;
-typedef AdaptationTraits::Point_2                   point2D;
-typedef CGAL_VoronoiDiagram::Locate_result             Locate_result;
-typedef CGAL_VoronoiDiagram::Vertex_handle             Vertex_handle;
-typedef CGAL_VoronoiDiagram::Face_handle               Face_handle;
-typedef CGAL_VoronoiDiagram::Halfedge_handle           Halfedge_handle;
-typedef CGAL_VoronoiDiagram::Ccb_halfedge_circulator   Ccb_halfedge_circulator;
+#include "imports.hpp"
+
+typedef std::pair<double, double> point;
+#define x first
+#define y second
+
+#ifndef EVENT_H
+#define EVENT_H
+
+class Event {
+    public:
+        Event(double _x, point _p, Arc *_a)
+            : x(_x), p(_p), a(_a), valid(true) {}
+
+    double getX(){return this->x;}
+    point getPoint(){return this->p;}
+    bool isValid(){return this->valid;}
+    void setValid(bool _v){this->valid = _v;}
+    Arc* getArc(){return this->a;}
+
+    private:
+        double x;
+        point p;
+        Arc *a;
+        bool valid;
+};
+
+#endif
+
+
+#ifndef ARC_H
+#define ARC_H
+class Arc 
+{
+    public:
+        Arc(point _p, Arc *a=0, Arc *b=0)
+        : p(_p), prev(a), next(b), e(0), s0(0), s1(0) {}
+
+        point getPoint(){return this->p;}
+        Arc* getPrev(){return this->prev;}
+        Arc* getNext(){return this->next;}
+        
+        Event* getEvent(){return this->e;}
+
+        Segment* getSegment0(){return this->s0;}
+        Segment* getSegment1(){return this->s1;}
+
+        void setNext(Arc* _a){this->next = _a;}
+        void setPrev(Arc* _a){this->prev = _a;}
+
+        void setEvent(Event* _e){this->e = _e;}
+
+        void setSegment0(Segment* _s){this->s0 = _s;}
+        void setSegment1(Segment* _s){this->s1 = _s;}
+    private:
+
+        point p;
+        Arc *prev, *next;
+        Event *e;
+
+        Segment *s0, *s1;
+};
+#endif
+
+#ifndef SEGMENT_H
+#define SEGMENT_H
+
+class Segment{
+    public:
+        Segment(point p)
+            : start(p), end(0,0), done(false)
+        { }
+        
+        void finish(point p) { if (done) return; end = p; done = true; }
+
+        point getStart(){return this->start;}
+        point getEnd(){return this->end;}
+
+   private:
+
+    point start, end;
+    bool done;
+};
+#endif
